@@ -32,41 +32,17 @@ conda activate bart_peacok
 
 ## Preparing datasets for train/eval
 
-To save time prior to running training and evaluation, run the following the prepare the required datasets:
+To save time prior to running training and evaluation, run the following command:
 
 ``python save_datasets.py --dataset {dataset}``
 
-Supported options for the dataset are: 
-``persona_chat``, 
-``persona_chat_peacok``, 
-``persona_chat_peacok_retrieved``, ``persona_chat_peacok_induced``, 
-``persona_chat_peacok_random_induced``, ``persona_chat_peacok_retrieved_induced``
-
-The first two options can be computed right away (given you obtained the datasets from the first section). For the remaining options you need to run the retrieved-induced components (instruction in the next section).
-
-## Computing induced and retrieved
-
-```
-cd induce_retrieve_pipeline
-
-# Compute all required embeddings in advance
-python embed_full_personas.py
-python embed_utterances.py
-python embed_peacok.py
-
-# Run the induce-retrieve pipeline
-python induce_and_retrieve.py
-
-# Update the data based on the pipeline output
-extend_persona_chat_with_induced_and_retrieved.py
-```
+with options 'persona_chat_peacok' and 'persona_revised_chat' in order to prepare the required datasets.
 
 ## Run training or eval
 
 To run the training and evaluation scripts, please refer to the Makefile. Prior to running it, set the desired arguments in the Makefile. The following options are supported:
 
 ```
-make train-pc
 make train-peacok
 
 make eval-ppl
