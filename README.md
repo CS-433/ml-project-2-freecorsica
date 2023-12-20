@@ -1,6 +1,6 @@
 # PeaCoK Augmented PersonaChat based on BART
 
-This is the repository for ConvAI2 PersonaChat dialogue modeling with BART and PeaCoK knowledge graph augmentation.
+This is the copy of repository for ConvAI2 PersonaChat dialogue modeling with BART and PeaCoK knowledge graph augmentation (https://github.com/Silin159/PeaCoK-PersonaChat/tree/master) with our modifications applied for training, to reproduce our results, you should train the model following the steps written below. Then, clone the starter kit repository provided by the organizers of CPDC challenge (https://gitlab.aicrowd.com/aicrowd/challenges/commonsense-persona-grounded-dialogue-challenge-2023/commonsense-persona-grounded-dialogue-challenge-task-1-starter-kit#how-to-write-your-own-model) and change the path in the agent/bart_agent.py file to the checkpoint that you want to use for evaluation.
 
 ## Gathering the data
 Our data can be downloaded from [this link](https://drive.google.com/drive/folders/1A51hZvSLvJoPAKDy2XR_eb-ooZqPRgbb?usp=sharing), please unzip the file and place the folder `data` under this root repository.
