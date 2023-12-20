@@ -71,7 +71,7 @@ if __name__ == '__main__':
     persona, persona_ext, partner, query, response, cand = create_data_from_peacok_format(
         "/root/daniil/PeaCoK-PersonaChat/data/persona_peacok", dataset=args.dataset, mode="valid"
     )
-    # print("1111")
+
     # print(persona)
     val_data = build_dataloader(
         persona, query, response, cand, tokenizer,
@@ -113,8 +113,7 @@ if __name__ == '__main__':
             valset.append(tensor)
             logger.info("{}: {}".format(input_name, tensor.size()))
 
-    # print("222")
-    # print(trainset)
+
     logger.info("Prepare dataloaders.")
 
     train_dataset = TensorDataset(*trainset)

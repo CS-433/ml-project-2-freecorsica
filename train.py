@@ -144,61 +144,68 @@ class AugumentedDataset(TensorDataset):
         with open(f'saved_datasets/persona_revised_chat/{mode}_dataset.pkl', 'rb') as f:
             self.data['persona_revised_chat'] = pickle.load(f)    
 
-    def __len__(self):
+    # returns the name of the dataset we want to use depending on the parity of epoch
+    def get_dataset_name(self):
+      
         if self.engine.state.epoch % 2 == 0:
-            dataset_name = 'persona_chat_peacok'
+            return 'persona_chat_peacok'
         else:
-            dataset_name = 'persona_revised_chat'  
-        return len(self.data[dataset_name])
+            return 'persona_revised_chat' 
+
+    def __len__(self):
+        return len(self.data[self.get_dataset_name()])
 
     def __getitem__(self, index):
-        if self.engine.state.epoch % 2 == 0:
-            dataset_name = 'persona_chat_peacok'
-        else:
-            dataset_name = 'persona_revised_chat'  
+        dataset_name = self.get_dataset_name()
 
-
+        # take the first candidate
         cand = self.data[dataset_name][index][0][0]
+        
+        # 50269 is the index of the <partner> token, we want to know where persona information ends  
         partner_index = cand.tolist().index(50269)
-        # print("len(cand)",len(cand))
-        # print("partner_index",partner_index)
+
+        # taking all tokenized persona information lines
         temp = cand[2:partner_index].tolist()
+
+        # split them by separator token, so now we have a list of tokenized persona information lines
         split_indices = [i + 1 for i, x in enumerate(temp) if x == 2]
         splited_per = [temp[i:j] for i, j in zip([0] + split_indices, split_indices + [None])]
 
-
+        # sampling 5 random lines
         indices_of_persona_info = random.sample(range(len(splited_per)), k=min(5, len(splited_per)))
        
         persona, attention_mask = [], []
 
+        # unpdate persona information and attention masks using only those 5 sampled lines
         for cand in self.data[dataset_name][index][0]:
             ar = [splited_per[i] for i in indices_of_persona_info]
-            per = cand[0:2].tolist() + [item for sublist in ar for item in sublist] + cand[partner_index:partner_index+300].tolist()
+            # Attention!!! 300 was added to prevent memory issues, our server was not powerfull enough to load longer lines
+            per = cand[0:2].tolist() + [item for sublist in ar for item in sublist] + cand[partner_index:partner_index + 300].tolist()
             att = [1] * len(per)
             persona.append(per)
             attention_mask.append(att)
 
-        # print(persona)
         from torch.nn.utils.rnn import pad_sequence
         
+        # Attention!!! we cut all lines to 600 to prevent memory issues, our server was not powerfull enough to load longer lines
         while len(persona[0]) < 600:
             persona[0].append(1)
 
         persona = pad_sequence([torch.from_numpy(np.array(per)) for per in persona],
                                 batch_first=True, padding_value=1)
         
+        # Attention!!! we cut all lines to 600 to prevent memory issues, our server was not powerfull enough to load longer lines
         while len(attention_mask[0]) < 600:
             attention_mask[0].append(0)
 
         attention_mask = pad_sequence([torch.from_numpy(np.array(att)) for att in attention_mask],
                                 batch_first=True, padding_value=0)
         
-        # print(persona.shape, attention_mask.shape)
-        answer = [col for col in self.data[dataset_name][index]]
-        answer[0] = persona
-        answer[1] = attention_mask
+        udpated_persona = [col for col in self.data[dataset_name][index]]
+        udpated_persona[0] = persona
+        udpated_persona[1] = attention_mask
         
-        return tuple(answer)
+        return tuple(udpated_persona)
     
     
 # ------------------ Single eval pass ------------------

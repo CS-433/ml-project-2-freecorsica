@@ -32,8 +32,6 @@ train-peacok:
 eval-ppl:
 	${accelerate_eval_ppl} eval.py \
 		--dataset persona_chat_peacok \
-		--model_checkpoint persona_chat_peacok_original_first_run/checkpoint_latest \
-                --tokenizer_checkpoint persona_chat_peacok_original_first_run
 		--eval_batch_size 32
 
 

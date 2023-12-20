@@ -120,11 +120,12 @@ def create_data_from_peacok_format(
     if mode == 'valid':
      slice = -1 
      
-    for (ind, sample), (_, sample_info) in zip(list(data_dict.items())[::slice], list(augumented_info.items())[::slice]):
+    for (_, sample), (_, sample_info) in zip(list(data_dict.items())[::slice], list(augumented_info.items())[::slice]):
         # Extending the current persona
         if dataset == 'persona_chat':
             persona.append(sample['persona1_ori'])
         elif dataset in ['persona_chat_peacok', 'persona_chat_peacok_retrieved']:
+                # appending persona information from persona_extend_full_original dataset
                 persona.append(sample['persona1_ori'] + sample['persona1_ext'] + sample_info['persona1']['head'] + 
                            np.array(sample_info['persona1']['triple']).ravel().tolist()
                            )
@@ -139,7 +140,6 @@ def create_data_from_peacok_format(
             persona_ext.append(sample['persona1_ext'])
             partner_persona.append(sample['persona2_ext'])
 
-        # print(persona)
         # Queries - even utterances
         query.append(sample['text'][0::2])
         # Responses - odd utterances
@@ -160,12 +160,10 @@ def create_encoder_input(
     ):
     encoder_input_ids = []
 
-    # print("sep_id", sep_id)
     per_input_ids = [latent_id] + [persona_id]
     for x in per:
         per_input_ids += x + [sep_id]
     
-    # print("per_input_ids", len(per_input_ids))
     partner_input_ids = [partner_id]
     for x in partner:
         partner_input_ids += x + [sep_id]
@@ -179,7 +177,6 @@ def create_encoder_input(
             encoder_input_ids += [res_id] + history[i] + [eos_id]
     attention_mask = [1] * len(encoder_input_ids)
     per_attention_mask = [1] * len(per_input_ids)
-    # print("encoder_input_ids", len(encoder_input_ids))
     return encoder_input_ids, attention_mask, per_input_ids, per_attention_mask
 
 def create_decoder_input(response_ids, res_id, eos_id, golden=None):
@@ -327,7 +324,6 @@ def build_dataloader(
                                 batch_first=True, padding_value=-100)
             dataset[item_name] = item
 
-        # print("dataset['input_ids']",dataset['input_ids'])    
 
     return dataset
 
