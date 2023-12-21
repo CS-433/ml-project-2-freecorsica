@@ -134,7 +134,7 @@ def train_step(engine, batch):
     }
 
 
-class AugumentedDataset(TensorDataset):
+class AugmentedDataset(TensorDataset):
     def __init__(self, mode, engine):
         
         self.engine = engine
@@ -328,10 +328,10 @@ def main():
     evaluator = Engine(eval_step)
 
     train_loader = DataLoader(
-        AugumentedDataset( 'train', trainer), batch_size=args.train_batch_size, shuffle=True, num_workers=0
+        AugmentedDataset( 'train', trainer), batch_size=args.train_batch_size, shuffle=True, num_workers=0
     )
     eval_loader = DataLoader(
-        AugumentedDataset('val', evaluator), batch_size=args.val_batch_size, shuffle=False
+        AugmentedDataset('val', evaluator), batch_size=args.val_batch_size, shuffle=False
     )
     logger.info("Dataloaders ready.", main_process_only=True)
 
@@ -411,7 +411,7 @@ def main():
     #     else:
     #         dataset_name = 'persona_revised_chat'   
     #     del train_loader
-    #     train_loader = accelerator.prepare(DataLoader(AugumentedDataset(dataset_name, 'train'), batch_size=args.train_batch_size, shuffle=True, num_workers=0
+    #     train_loader = accelerator.prepare(DataLoader(AugmentedDataset(dataset_name, 'train'), batch_size=args.train_batch_size, shuffle=True, num_workers=0
     #     ))
 
     # trainer.add_event_handler(
